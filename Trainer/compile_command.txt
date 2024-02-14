@@ -1,0 +1,2 @@
+For cli pop up    -> g++ "-Wl,--stack,8388608" .\genetics.cpp .\ai_instanceHandler.cpp .\ai_configuration.cpp .\TetrisGame\piece.cpp .\TetrisGame\possibility.cpp .\TetrisGame\tetrisModule.cpp -o handlerTest.exe -O3
+For no cli pop up -> g++ "-Wl,--stack,8388608" .\genetics.cpp .\ai_instanceHandler.cpp .\ai_configuration.cpp .\TetrisGame\piece.cpp .\TetrisGame\possibility.cpp .\TetrisGame\tetrisModule.cpp -o handlerTest.exe -O3 -mwindows

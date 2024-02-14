@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Tetris Plays</title>
+
+	<link rel="icon" type="image/x-icon" href="favicon.png">
+
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+
+
+	<style>
+		@import url('Ubuntu-Regular.ttf');
+
+		@font-face {
+			font-family: Ubuntu;
+			src: url(Ubuntu-Regular.ttf);
+		}
+
+		* {
+			font-family: 'Ubuntu', sans-serif;
+			color: white;
+		}
+		
+		.unselectable {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+		
+		canvas {
+			border: 1px white solid;
+			/* height: 100vw; */
+		}
+		body {
+			margin: unset;
+			background-color: black;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		#gameBoard {
+			background-color: black;
+		}
+		#scoreLine, #statsLine {
+			color: white;
+			display: flex;
+			justify-content: space-around;
+		}
+		#scoreLine>p, #statsLine>p, #ratioCont {
+			margin: unset;
+		}
+		#gameHolder {
+			display: flex;
+			align-items: flex-start;
+			gap: 10px;
+		}
+		#gameHolder>div {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 9px;
+		}
+		#mobileControls {
+			display: none;
+			justify-content: space-between;
+			position: absolute;
+			bottom: 0px;
+			filter: opacity(0.6);
+			width: 100%;
+			justify-content: space-around;
+		}
+		#gameHolder #sideInfos {
+			display: none;
+		}
+		@media screen and (max-height: 1080px) and (min-aspect-ratio: 1) {
+			#gameBoard {
+				width: 390px; 
+				height: 780px; /* height:width ratio = 9/16 = .5625  */
+				/* max-height: 100vh; */
+				/* max-width: 50vh; /* 16/9 = 1.778 */
+				/* margin: auto;
+				/*top:0;bottom:0; /* vertical center */
+				/*left:0;right:0; /* horizontal center */
+			}
+			#scoreLine, #statsLine {
+				width: 400px;
+				padding: 17px;
+				font-size: 20px;
+			}
+			#ratioCont {
+				font-size: 20px;
+			}
+			#instructions {
+				font-size: 19px;
+			}
+		}
+		@media screen and (max-height: 900px) and (min-aspect-ratio: 1) {
+			#gameBoard {
+				width: 350px; 
+				height: 700px; /* height:width ratio = 9/16 = .5625  */
+				/* max-height: 100vh; */
+				/* max-width: 50vh; /* 16/9 = 1.778 */
+				/* margin: auto;
+				/*top:0;bottom:0; /* vertical center */
+				/*left:0;right:0; /* horizontal center */
+			}
+			#scoreLine, #statsLine {
+				width: 400px;
+				padding: 12px;
+				font-size: 19px;
+			}
+			#instructions {
+				font-size: 19px;
+			}
+		}
+		@media screen and (max-height: 800px), screen and (max-width: 650px) and (min-aspect-ratio: 1) {
+			#gameBoard {
+				width: 300px; 
+				height: 600px;
+			}
+			#scoreLine, #statsLine {
+				width: 300px;
+				padding: 12px;
+				font-size: 19px;
+			}
+			#instructions {
+				font-size: 18px;
+			}
+		}
+		@media screen and (max-width: 501px) {
+			#mobileControls {
+				display: flex;
+			}
+			/* .next, .held {
+				width: 60px;
+			} */
+		}
+
+
+		/* Vertical screens */
+
+		@media screen and (max-height: 1920px) and (max-aspect-ratio: 1) {
+			#gameBoard {
+				width: 850px; 
+				height: 1700px; /* height:width ratio = 9/16 = .5625  */
+				/* max-height: 100vh; */
+				/* max-width: 50vh; /* 16/9 = 1.778 */
+				/* margin: auto;
+				/*top:0;bottom:0; /* vertical center */
+				/*left:0;right:0; /* horizontal center */
+			}
+			#scoreLine, #statsLine {
+				width: 850px;
+				padding: 5px;
+				font-size: 40px;
+			}
+
+
+			#instructions {
+				font-size: 19px;
+			}
+
+			#sideInfos {
+				display: flex !important;
+			}
+
+			#gameHolder div:not(#sideInfos), #instructions {
+				display: none;
+			}
+			#sideInfos>canvas {
+				width: 160px;
+			}
+			#sideInfos>span {
+				font-size: 39px;
+			}
+
+		}
+		@media screen and (max-height: 1800px) and (max-aspect-ratio: 1) {
+			#gameBoard {
+				width: 800px; 
+				height: 1600px; /* height:width ratio = 9/16 = .5625  */
+				/* max-height: 100vh; */
+				/* max-width: 50vh; /* 16/9 = 1.778 */
+				/* margin: auto;
+				/*top:0;bottom:0; /* vertical center */
+				/*left:0;right:0; /* horizontal center */
+			}
+			#scoreLine, #statsLine {
+				width: 800px;
+				padding: 5px;
+				font-size: 39px;
+			}
+
+
+			#instructions {
+				font-size: 19px;
+			}
+
+			#sideInfos {
+				display: flex !important;
+			}
+
+			#gameHolder div:not(#sideInfos), #instructions {
+				display: none;
+			}
+			#sideInfos>canvas {
+				width: 160px;
+			}
+			#sideInfos>span {
+				font-size: 37px;
+			}
+
+		}
+		@media screen and (max-height: 1700px) and (max-aspect-ratio: 1) {
+			#gameBoard {
+				width: 750px; 
+				height: 1500px; /* height:width ratio = 9/16 = .5625  */
+				/* max-height: 100vh; */
+				/* max-width: 50vh; /* 16/9 = 1.778 */
+				/* margin: auto;
+				/*top:0;bottom:0; /* vertical center */
+				/*left:0;right:0; /* horizontal center */
+			}
+			#scoreLine, #statsLine {
+				width: 750px;
+				padding: 5px;
+				font-size: 38px;
+			}
+
+
+			#instructions {
+				font-size: 19px;
+			}
+
+			#sideInfos {
+				display: flex !important;
+			}
+
+			#gameHolder div:not(#sideInfos), #instructions {
+				display: none;
+			}
+			#sideInfos>canvas {
+				width: 160px;
+			}
+			#sideInfos>span {
+				font-size: 36px;
+			}
+
+		}
+		@media screen and (max-height: 1600px) and (max-aspect-ratio: 1) {
+			#gameBoard {
+				width: 700px; 
+				height: 1400px; /* height:width ratio = 9/16 = .5625  */
+				/* max-height: 100vh; */
+				/* max-width: 50vh; /* 16/9 = 1.778 */
+				/* margin: auto;
+				/*top:0;bottom:0; /* vertical center */
+				/*left:0;right:0; /* horizontal center */
+			}
+			#scoreLine, #statsLine {
+				width: 700px;
+				padding: 5px;
+				font-size: 39px;
+			}
+
+
+			#instructions {
+				font-size: 19px;
+			}
+
+			#sideInfos {
+				display: flex !important;
+			}
+
+			#gameHolder div:not(#sideInfos), #instructions {
+				display: none;
+			}
+			#sideInfos>canvas {
+				width: 160px;
+			}
+			#sideInfos>span {
+				font-size: 35px;
+			}
+
+		}		
+		@media screen and (max-height: 1500px) and (max-aspect-ratio: 1) {
+			#gameBoard {
+				width: 600px; 
+				height: 1200px; /* height:width ratio = 9/16 = .5625  */
+				/* max-height: 100vh; */
+				/* max-width: 50vh; /* 16/9 = 1.778 */
+				/* margin: auto;
+				/*top:0;bottom:0; /* vertical center */
+				/*left:0;right:0; /* horizontal center */
+			}
+			#scoreLine, #statsLine {
+				width: 600px;
+				padding: 5px;
+				font-size: 37px;
+			}
+
+
+			#instructions {
+				font-size: 19px;
+			}
+
+			#sideInfos {
+				display: flex !important;
+			}
+
+			#gameHolder div:not(#sideInfos), #instructions {
+				display: none;
+			}
+			#sideInfos>canvas {
+				width: 160px;
+			}
+			#sideInfos>span {
+				font-size: 35px;
+			}
+
+		}
+		@media screen and (max-height: 1300px) and (max-aspect-ratio: 1) {
+			#gameBoard {
+				width: 550px; 
+				height: 1100px; /* height:width ratio = 9/16 = .5625  */
+				/* max-height: 100vh; */
+				/* max-width: 50vh; /* 16/9 = 1.778 */
+				/* margin: auto;
+				/*top:0;bottom:0; /* vertical center */
+				/*left:0;right:0; /* horizontal center */
+			}
+			#scoreLine, #statsLine {
+				width: 500px;
+				padding: 5px;
+				font-size: 26px;
+			}
+
+
+			#instructions {
+				font-size: 19px;
+			}
+
+			#sideInfos {
+				display: flex !important;
+			}
+
+			#gameHolder div:not(#sideInfos), #instructions {
+				display: none;
+			}
+			#sideInfos>canvas {
+				width: 120px;
+			}
+			#sideInfos>span {
+				font-size: 22px;
+			}
+
+		}
+		@media screen and (max-height: 1200px) and (max-aspect-ratio: 1) {
+			#gameBoard {
+				width: 500px; 
+				height: 1000px; /* height:width ratio = 9/16 = .5625  */
+				/* max-height: 100vh; */
+				/* max-width: 50vh; /* 16/9 = 1.778 */
+				/* margin: auto;
+				/*top:0;bottom:0; /* vertical center */
+				/*left:0;right:0; /* horizontal center */
+			}
+			#scoreLine, #statsLine {
+				width: 500px;
+				padding: 5px;
+				font-size: 26px;
+			}
+
+
+			#instructions {
+				font-size: 19px;
+			}
+
+			#sideInfos {
+				display: flex !important;
+			}
+
+			#gameHolder div:not(#sideInfos), #instructions {
+				display: none;
+			}
+			#sideInfos>canvas {
+				width: 110px;
+			}
+			#sideInfos>span {
+				font-size: 21px;
+			}
+
+		}
+		@media screen and (max-height: 1100px) and (max-aspect-ratio: 1) {
+			#gameBoard {
+				width: 450px; 
+				height: 900px; /* height:width ratio = 9/16 = .5625  */
+				/* max-height: 100vh; */
+				/* max-width: 50vh; /* 16/9 = 1.778 */
+				/* margin: auto;
+				/*top:0;bottom:0; /* vertical center */
+				/*left:0;right:0; /* horizontal center */
+			}
+			#scoreLine, #statsLine {
+				width: 250px;
+				padding: 4px;
+				font-size: 19px;
+			}
+
+
+			#instructions {
+				font-size: 19px;
+			}
+
+			#sideInfos {
+				display: flex !important;
+			}
+
+			#gameHolder div:not(#sideInfos), #instructions {
+				display: none;
+			}
+
+		}
+		@media screen and (max-height: 950px) and (max-aspect-ratio: 1) {
+			#gameBoard {
+				width: 400px; 
+				height: 800px; /* height:width ratio = 9/16 = .5625  */
+				/* max-height: 100vh; */
+				/* max-width: 50vh; /* 16/9 = 1.778 */
+				/* margin: auto;
+				/*top:0;bottom:0; /* vertical center */
+				/*left:0;right:0; /* horizontal center */
+			}
+			#scoreLine, #statsLine {
+				width: 250px;
+				padding: 4px;
+				font-size: 19px;
+			}
+
+
+			#instructions {
+				font-size: 19px;
+			}
+
+			#sideInfos {
+				display: flex !important;
+			}
+
+			#gameHolder div:not(#sideInfos), #instructions {
+				display: none;
+			}
+
+		}
+		@media screen and (max-height: 750px) and (max-aspect-ratio: 1) {
+			#gameBoard {
+				width: 270px; 
+				height: 540px; /* height:width ratio = 9/16 = .5625  */
+				/* max-height: 100vh; */
+				/* max-width: 50vh; /* 16/9 = 1.778 */
+				/* margin: auto;
+				/*top:0;bottom:0; /* vertical center */
+				/*left:0;right:0; /* horizontal center */
+			}
+			#scoreLine, #statsLine {
+				width: 250px;
+				padding: 4px;
+				font-size: 19px;
+			}
+
+
+			#instructions {
+				font-size: 19px;
+			}
+
+			#sideInfos {
+				display: flex !important;
+			}
+
+			#gameHolder div:not(#sideInfos), #instructions {
+				display: none;
+			}
+
+		}
+		
+
+		#dpad, #utilities {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            width: 150px;
+            height: 100px;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        #dpad button, #utilities button {
+            width: 100%;
+            height: 100%;
+            background-color: #666;
+            border: none;
+            border-radius: 5px;
+            font-size: 24px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        #dpad button#up {
+            grid-area: 1 / 2 / 2 / 3;
+        }
+
+        #dpad button#down {
+            grid-area: 2 / 1 / 3 / 3;
+        }
+
+        #dpad button#left {
+            grid-area: 1 / 1 / 2 / 2;
+        }
+
+        #dpad button#right {
+            grid-area: 1 / 3 / 2 / 2;
+        }
+
+		#rotate {
+			grid-area: 1 / 1 / 2 / 2;
+		}
+
+		#hold {
+			grid-area: 2 / 2 / 3 / 3;
+		}
+		
+	</style>
+</head>
+<body>
+	<div id="scoreLine">
+		<p>Lines: <span id="lines">0</span></p>
+		<p>Score: <span id="score">0</span></p>
+	</div>
+	<div id="statsLine">
+		<p>Score / lines:<br><span id="ratio">0</span></p>
+		<!-- <p>Fitness:<br><span id="fitness">0</span></p> -->
+		<p>Use numbers<br>to adjust speed</p>
+	</div>
+	<div id="gameHolder">
+		<div>
+			<span>Held</span>
+			<canvas class="held" width="90" height="90"></canvas>
+		</div>
+		<canvas id="gameBoard" width="1000" height="2000"></canvas>
+		<div>
+			<span>Next</span>
+			<canvas class="next" width="90" height="90"></canvas>
+		</div>
+		<div id="sideInfos">
+			<span>Held</span>
+			<canvas class="held" width="90" height="90"></canvas>
+			<span>Next</span>
+			<canvas class="next" width="90" height="90"></canvas>
+		</div>
+	</div>
+	<!-- <p id="instructions">z to hold, up to spin, esc to pause</p> -->
+	<!-- <script src="ccapture.js\build\CCapture.min.js"></script>
+	<script src="ccapture.js\src\webm-writer-0.2.0.js"></script>
+	<script src="ccapture.js\src\download.js"></script> -->
+	
+	<script src="getRidOfClearedRows.js"></script>
+	<script src="autoIncrementInstant.js"></script>
+	<script src="autoIncrementNormal.js"></script>
+	<script src="constants.js"></script>
+	<script src="fixWeightconfig.js"></script>
+	<script src="drawBoard.js"></script>
+	<script src="drawPieces.js"></script>
+	<script src="findBoardScore.js"></script>
+	<script src="tryAllOrientations.js"></script>
+	<script src="index.js?v=2"></script>
+</body>
+</html>
